@@ -2,6 +2,8 @@
 
 Astro using Contentful as a CMS
 
+[Check out the site](https://myastrocontent.netlify.app/)
+
 ## How It's Made:
 
 **Frontend:** Astro, Typescripte
