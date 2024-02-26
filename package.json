@@ -7,11 +7,15 @@
     "start": "astro dev",
     "build": "astro check && astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "contentful-typegen": "cf-content-types-generator contentModel.json"
   },
   "dependencies": {
-    "astro": "^4.3.2",
     "@astrojs/check": "^0.4.1",
+    "@contentful/rich-text-html-renderer": "^16.3.4",
+    "astro": "^4.3.2",
+    "cf-content-types-generator": "^2.15.0",
+    "contentful": "^10.6.21",
     "typescript": "^5.3.3"
   }
 }
