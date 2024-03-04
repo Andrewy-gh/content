@@ -1,0 +1,54 @@
+---
+import { contentfulClient } from '../lib/contentful';
+import type { TypeProjectTypeSkeleton } from '../lib/contentful';
+
+const entries = await contentfulClient.getEntries<TypeProjectTypeSkeleton>({
+  content_type: 'projectType',
+});
+
+const { fields: editorials } = entries.items.filter(
+  (item) => item.fields.title === 'Editorial'
+)[0];
+const editorialImages = editorials?.projects?.map((project) => {
+  if (
+    'fields' in project &&
+    project?.fields?.images &&
+    project?.fields?.images[0]?.fields?.file?.url
+  ) {
+    return {
+      title: project?.fields?.title,
+      slug: project?.fields?.slug,
+      image: project?.fields?.images[0]?.fields?.file?.url,
+      description: project?.fields?.images[0]?.fields?.description,
+    };
+  } else {
+    return null;
+  }
+});
+// const advertising = entries.items.filter(
+//   (item) => item.fields.title === 'Advertising'
+// )[0];
+---
+
+<html lang="en">
+  <head>
+    <title>Projects</title>
+  </head>
+  <body>
+    <h1>Projects</h1>
+    <section>
+      <h2>{editorials.title}</h2>
+      {
+        editorialImages &&
+          editorialImages.map((editorial) => (
+            <div>
+              <a href={`projects/${editorial?.slug}`}>
+                <h3>{editorial?.title}</h3>
+              </a>
+              <img src={editorial?.image} alt={editorial?.description} />
+            </div>
+          ))
+      }
+    </section>
+  </body>
+</html>

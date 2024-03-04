@@ -1,20 +1,23 @@
 ---
 import { contentfulClient } from '../lib/contentful';
-import type { BlogPost } from '../lib/contentful';
+import type { TypeBlogPostSkeleton } from '../lib/contentful';
 
-const entries = await contentfulClient.getEntries<BlogPost>({
+const entries = await contentfulClient.getEntries<TypeBlogPostSkeleton>({
   content_type: 'blogPost',
 });
 
 const posts = entries.items.map((item) => {
-  const { title, date, description, slug } = item.fields;
+  const { title, date, description, slug, images } = item.fields;
   return {
     title,
-    slug,
+    date,
     description,
-    date: new Date(date).toLocaleDateString(),
+    slug,
+    images,
   };
 });
+
+const post = posts[0];
 ---
 
 <html lang="en">
@@ -23,18 +26,21 @@ const posts = entries.items.map((item) => {
   </head>
   <body>
     <h1>My Blog</h1>
-    <ul>
-      {
-        posts.map((post) => (
-          <li>
-            <a href={`/posts/${post.slug}/`}>
-              <h2>{post.title}</h2>
-            </a>
-            <time>{post.date}</time>
-            <p>{post.description}</p>
-          </li>
-        ))
-      }
-    </ul>
+    {
+      posts.map((post) => (
+        <li>
+          <a href={`/posts/${post.slug}/`}>
+            <h2>{post.title}</h2>
+          </a>
+          <p>{post.description}</p>
+          {post.images &&
+            post.images.map((image) =>
+              'fields' in image && image?.fields?.file?.url ? (
+                <img src={image.fields.file.url} />
+              ) : null
+            )}
+        </li>
+      ))
+    }
   </body>
 </html>

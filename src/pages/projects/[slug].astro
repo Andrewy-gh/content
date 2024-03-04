@@ -8,13 +8,13 @@ export async function getStaticPaths() {
     content_type: 'blogPost',
   });
   const pages = entries.items.map((item) => {
-    if (item?.fields?.content && item?.fields?.date) {
+    if ('fields' in item && item?.fields?.content) {
       return {
         params: { slug: item.fields.slug },
         props: {
           title: item.fields.title,
           content: documentToHtmlString(item.fields.content),
-          date: new Date(item.fields.date).toLocaleDateString(),
+          images: item.fields.images,
         },
       };
     } else {
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
   return pages;
 }
 
-const { content, title, date } = Astro.props;
+const { title, content, images } = Astro.props;
 ---
 
 <html lang="en">
@@ -33,7 +33,20 @@ const { content, title, date } = Astro.props;
   </head>
   <body>
     <h1>{title}</h1>
-    <time>{date}</time>
     <article set:html={content} />
+    {
+      images &&
+        images.map(
+          (image) =>
+            'fields' in image && (
+              <div>
+                <img
+                  src={image?.fields?.file?.url}
+                  alt={image?.fields?.description}
+                />
+              </div>
+            )
+        )
+    }
   </body>
 </html>
