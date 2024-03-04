@@ -2,6 +2,14 @@
 import { contentfulClient } from '../lib/contentful';
 import type { TypeProjectTypeSkeleton } from '../lib/contentful';
 
+function hasFieldsProperty(project: any): project is { fields: any } {
+  return typeof project === 'object' && project !== null && 'fields' in project;
+}
+
+function hasUrlProperty(obj: any): obj is { url: string } {
+  return typeof obj === 'object' && obj !== null && 'url' in obj;
+}
+
 const entries = await contentfulClient.getEntries<TypeProjectTypeSkeleton>({
   content_type: 'projectType',
 });
@@ -11,8 +19,12 @@ const { fields: editorials } = entries.items.filter(
 )[0];
 const editorialImages = editorials?.projects?.map((project) => {
   if (
-    'fields' in project &&
+    hasFieldsProperty(project) &&
     project?.fields?.images &&
+    Array.isArray(project?.fields?.images) &&
+    project?.fields?.images.length > 0 && // Check if index 0 exists
+    hasFieldsProperty(project?.fields?.images[0]) &&
+    hasUrlProperty(project?.fields?.images[0]?.fields?.file) && // Check if 'file' has 'url' property
     project?.fields?.images[0]?.fields?.file?.url
   ) {
     return {
@@ -45,7 +57,7 @@ const editorialImages = editorials?.projects?.map((project) => {
               <a href={`projects/${editorial?.slug}`}>
                 <h3>{editorial?.title}</h3>
               </a>
-              <img src={editorial?.image} alt={editorial?.description} />
+              <img src={editorial?.image} alt={`${editorial?.description}`} />
             </div>
           ))
       }
