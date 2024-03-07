@@ -16,22 +16,36 @@ export interface TypeBlogPostFields {
   content?: EntryFieldTypes.RichText;
   images?: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
   type?: EntryFieldTypes.EntryLink<EntrySkeletonType>;
+  thumbnail?: EntryFieldTypes.AssetLink;
 }
 
 export type TypeBlogPostSkeleton = EntrySkeletonType<
   TypeBlogPostFields,
   'blogPost'
 >;
-
 export type TypeBlogPost<
   Modifiers extends ChainModifiers,
   Locales extends LocaleCode
 > = Entry<TypeBlogPostSkeleton, Modifiers, Locales>;
 
+export interface TypeProjectFields {
+  project?: EntryFieldTypes.RichText;
+  title?: EntryFieldTypes.Symbol;
+}
+
+export type TypeProjectSkeleton = EntrySkeletonType<
+  TypeProjectFields,
+  'project'
+>;
+export type TypeProject<
+  Modifiers extends ChainModifiers,
+  Locales extends LocaleCode
+> = Entry<TypeProjectSkeleton, Modifiers, Locales>;
+
 export interface TypeProjectTypeFields {
   title?: EntryFieldTypes.Symbol;
   projects?: EntryFieldTypes.Array<
-    EntryFieldTypes.EntryLink<EntrySkeletonType>
+    EntryFieldTypes.EntryLink<TypeBlogPostSkeleton>
   >;
 }
 
@@ -39,7 +53,6 @@ export type TypeProjectTypeSkeleton = EntrySkeletonType<
   TypeProjectTypeFields,
   'projectType'
 >;
-
 export type TypeProjectType<
   Modifiers extends ChainModifiers,
   Locales extends LocaleCode

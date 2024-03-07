@@ -2,14 +2,6 @@
 import { contentfulClient } from '../lib/contentful';
 import type { TypeProjectTypeSkeleton } from '../lib/contentful';
 
-function hasFieldsProperty(project: any): project is { fields: any } {
-  return typeof project === 'object' && project !== null && 'fields' in project;
-}
-
-function hasUrlProperty(obj: any): obj is { url: string } {
-  return typeof obj === 'object' && obj !== null && 'url' in obj;
-}
-
 const entries = await contentfulClient.getEntries<TypeProjectTypeSkeleton>({
   content_type: 'projectType',
 });
@@ -19,19 +11,15 @@ const { fields: editorials } = entries.items.filter(
 )[0];
 const editorialImages = editorials?.projects?.map((project) => {
   if (
-    hasFieldsProperty(project) &&
-    project?.fields?.images &&
-    Array.isArray(project?.fields?.images) &&
-    project?.fields?.images.length > 0 && // Check if index 0 exists
-    hasFieldsProperty(project?.fields?.images[0]) &&
-    hasUrlProperty(project?.fields?.images[0]?.fields?.file) && // Check if 'file' has 'url' property
-    project?.fields?.images[0]?.fields?.file?.url
+    'fields' in project &&
+    project?.fields?.thumbnail &&
+    'fields' in project?.fields?.thumbnail
   ) {
     return {
       title: project?.fields?.title,
       slug: project?.fields?.slug,
-      image: project?.fields?.images[0]?.fields?.file?.url,
-      description: project?.fields?.images[0]?.fields?.description,
+      thumbnail: project?.fields?.thumbnail?.fields?.file?.url,
+      description: project?.fields?.thumbnail?.fields?.description,
     };
   } else {
     return null;
@@ -50,14 +38,18 @@ const editorialImages = editorials?.projects?.map((project) => {
     <h1>Projects</h1>
     <section>
       <h2>{editorials.title}</h2>
+
       {
         editorialImages &&
           editorialImages.map((editorial) => (
             <div>
-              <a href={`projects/${editorial?.slug}`}>
+              <a href={`${editorial?.slug}`}>
                 <h3>{editorial?.title}</h3>
               </a>
-              <img src={editorial?.image} alt={`${editorial?.description}`} />
+              <img
+                src={editorial?.thumbnail}
+                alt={`${editorial?.description}`}
+              />
             </div>
           ))
       }
